@@ -1,2 +1,2 @@
-# StockHeroV2
+# StockHero_GUI
 NothingToSeeHere
