@@ -1,2 +1,0 @@
-# StockHero_GUI
-NothingToSeeHere
