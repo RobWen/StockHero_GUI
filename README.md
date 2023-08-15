@@ -1,2 +1,2 @@
 # StockHero_GUI
-NothingToSeeHere Git Test
+NothingToSeeHere

@@ -55,3 +55,19 @@ def prediction(df_train, period):
     future = m.make_future_dataframe(periods=period)
     forecast = m.predict(future)
     return m, forecast
+
+@st.cache_data
+def get_data_gurufocus_pe(ticker):
+    ticker = stock.Ticker(ticker)
+    data_load_state = st.text("Load data...")
+    data = ticker.gurufocus.pe_ratio_av
+    data_load_state.text("Loading data...done!")
+    return data
+
+@st.cache_data
+def get_data_gurufocus_debt_to_ebitda(ticker):
+    ticker = stock.Ticker(ticker)
+    data_load_state = st.text("Load data...")
+    data = ticker.gurufocus.debt_to_ebitda
+    data_load_state.text("Loading data...done!")
+    return data
