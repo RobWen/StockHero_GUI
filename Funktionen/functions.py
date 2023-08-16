@@ -19,8 +19,12 @@ def get_data_morningstar(ticker):
     ticker = stock.Ticker(ticker)
     data_load_state = st.text("Load data...")
     data = ticker.morningstar.key_statistics
+    try:
+        name = ticker.morningstar.name_id
+    except:
+        name = "Das ist kein gültiger Name !"
     data_load_state.text("Loading data...done!")
-    return data
+    return data, name
 
 @st.cache_data
 def load_data(ticker, START, TODAY):

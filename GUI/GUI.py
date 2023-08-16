@@ -16,7 +16,6 @@ class GUI:
     def __init__(self):    
         st.sidebar.title('Options')
         option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus'), 1)
-        #st.header(option)
         
         if option == 'Forecasting':
             self.prophet_gui()
@@ -26,6 +25,12 @@ class GUI:
 
         if option == 'Gurufocus':
             self.gurufocus_gui()
+
+    ################################
+    ###                          ###
+    ###       Prophet GUI        ###
+    ###                          ###
+    ################################
 
     def prophet_gui(self):
         START = "2013-01-01"
@@ -49,27 +54,45 @@ class GUI:
             m, forecast = prediction(df_train, period)
             
             plot_forecast(m, forecast)
-        
+
+    ################################
+    ###                          ###
+    ###     Morningstar GUI      ###
+    ###                          ###
+    ################################
+
     def morningstar_gui(self):
-        st.title('Ticker-Symbol Eingabe')
+        st.title('Eingabe')
         
         # Eingabebox für das Ticker-Symbol
-        ticker_symbol = st.text_input('Gib das Ticker-Symbol ein:')
+        ticker_symbol = st.text_input('Gib das Ticker-Symbol / die ISIN / den Namen ein:')
+        df, name_symbol = get_data_morningstar(ticker_symbol)
         
         # Zeige das eingegebene Ticker-Symbol an
         if ticker_symbol:
-            st.write(f'Du hast das Ticker-Symbol eingegeben: {ticker_symbol}')
+            st.write("Du hast folgendes Unternehmen eingegeben:")
+            centered_text = f"<div style='text-align: center; font-size: 24px;'>{name_symbol}</div>"
+            st.write(f'{centered_text}', unsafe_allow_html=True)
     
         # Button, um den DataFrame zu kopieren
         if st.button('DataFrame kopieren'):
-            df = get_data_morningstar(ticker_symbol)
-            df_markdown = df.to_markdown()
-            win32clipboard.OpenClipboard()
-            win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardText(df_markdown)
-            win32clipboard.CloseClipboard()
-            st.write('DataFrame wurde in die Zwischenablage kopiert.')
-            st.write(df)
+            df, name = get_data_morningstar(ticker_symbol)
+            if df is not None: 
+                df_markdown = df.to_markdown()
+                win32clipboard.OpenClipboard()
+                win32clipboard.EmptyClipboard()
+                win32clipboard.SetClipboardText(df_markdown)
+                win32clipboard.CloseClipboard()
+                st.write('DataFrame wurde in die Zwischenablage kopiert.')
+                st.write(df)
+            else:
+                st.write(':sunglasses:')
+
+    ################################
+    ###                          ###
+    ###       Gurufocus GUI      ###
+    ###                          ###
+    ################################
         
     def gurufocus_gui(self):    
         st.title('Ticker-Symbol Eingabe')

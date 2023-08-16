@@ -1,3 +1,3 @@
 # StockHero
 
-This is the repository for my personal frontend service, if you want to check the backend check this repo https://pypi.org/project/StockHero/
+This is the repo for my personal frontend, if you want to check part of the backend go to https://pypi.org/project/StockHero/
