@@ -15,7 +15,7 @@ from datetime import date
 class GUI:
     def __init__(self):    
         st.sidebar.title('Options')
-        option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus'), 1)
+        option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus', 'Stratosphere'), 1)
         
         if option == 'Forecasting':
             self.prophet_gui()
@@ -25,6 +25,9 @@ class GUI:
 
         if option == 'Gurufocus':
             self.gurufocus_gui()
+            
+        if option == 'Stratosphere':
+            self.stratosphere_gui()
 
     ################################
     ###                          ###
@@ -126,9 +129,32 @@ class GUI:
             st.write('DataFrame wurde in die Zwischenablage kopiert.')
             st.write(df)
         
+    ################################
+    ###                          ###
+    ###    Stratosphere GUI      ###
+    ###                          ###
+    ################################
+    
+    def stratosphere_gui(self):
+        st.title('Eingabe')
         
+        # Eingabebox für das Ticker-Symbol
+        ticker_symbol = st.text_input('Gib das Ticker-Symbol ein:')
         
-        
+        # Zeige das eingegebene Ticker-Symbol an
+        if ticker_symbol:
+            st.write(f'Du hast das Ticker-Symbol eingegeben: {ticker_symbol}')
+            
+        # Button, um den DataFrame zu kopieren
+        if st.button('Returns (5Y Avg)'):
+            df = get_data_stratosphere_returns(ticker_symbol)
+            df_markdown = df.to_markdown()
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardText(df_markdown)
+            win32clipboard.CloseClipboard()
+            st.write('DataFrame wurde in die Zwischenablage kopiert.')
+            st.write(df)
         
         
         

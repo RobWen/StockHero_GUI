@@ -75,3 +75,11 @@ def get_data_gurufocus_debt_to_ebitda(ticker):
     data = ticker.gurufocus.debt_to_ebitda
     data_load_state.text("Loading data...done!")
     return data
+
+@st.cache_resource
+def get_data_stratosphere_returns(ticker):
+    ticker = stock.Ticker(ticker)
+    data_load_state = st.text("Load data...")
+    data = ticker.stratosphere.returns
+    data_load_state.text("Loading data...done!")
+    return data
