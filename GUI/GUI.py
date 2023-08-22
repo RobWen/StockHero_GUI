@@ -8,7 +8,6 @@ Created on Fri Aug 11 13:02:58 2023
 from Funktionen.functions import *
 
 import streamlit as st
-import win32clipboard
 
 from datetime import date
 
@@ -82,10 +81,7 @@ class GUI:
             df, name = get_data_morningstar(ticker_symbol)
             if df is not None: 
                 df_markdown = df.to_markdown()
-                win32clipboard.OpenClipboard()
-                win32clipboard.EmptyClipboard()
-                win32clipboard.SetClipboardText(df_markdown)
-                win32clipboard.CloseClipboard()
+                set_clipboard_text(df_markdown)
                 st.write('DataFrame wurde in die Zwischenablage kopiert.')
                 st.write(df)
             else:
@@ -111,10 +107,7 @@ class GUI:
         if st.button('Historisches PE-Ratio'):
             df = get_data_gurufocus_pe(ticker_symbol)
             df_markdown = df.to_markdown()
-            win32clipboard.OpenClipboard()
-            win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardText(df_markdown)
-            win32clipboard.CloseClipboard()
+            set_clipboard_text(df_markdown)
             st.write('DataFrame wurde in die Zwischenablage kopiert.')
             st.write(df)
             
@@ -122,10 +115,7 @@ class GUI:
         if st.button('Historisches Debt-to-EBITDA-Ratio'):
             df = get_data_gurufocus_debt_to_ebitda(ticker_symbol)
             df_markdown = df.to_markdown()
-            win32clipboard.OpenClipboard()
-            win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardText(df_markdown)
-            win32clipboard.CloseClipboard()
+            set_clipboard_text(df_markdown)
             st.write('DataFrame wurde in die Zwischenablage kopiert.')
             st.write(df)
         
@@ -149,10 +139,7 @@ class GUI:
         if st.button('Returns (5Y Avg)'):
             df = get_data_stratosphere_returns(ticker_symbol)
             df_markdown = df.to_markdown()
-            win32clipboard.OpenClipboard()
-            win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardText(df_markdown)
-            win32clipboard.CloseClipboard()
+            set_clipboard_text(df_markdown)
             st.write('DataFrame wurde in die Zwischenablage kopiert.')
             st.write(df)
         

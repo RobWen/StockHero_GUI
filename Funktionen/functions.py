@@ -4,6 +4,7 @@ Created on Fri Aug 11 13:16:53 2023
 
 @author: rwenzel
 """
+import platform
 
 import StockHero as stock
 import yfinance as yf
@@ -13,6 +14,11 @@ from plotly import graph_objs as go
 from prophet.plot import plot_plotly
 
 from prophet import Prophet
+
+if platform.system() == "Windows":
+    import win32clipboard as clipboard
+else:
+    import pyperclip as clipboard
 
 @st.cache_data
 def get_data_morningstar(ticker):
@@ -83,3 +89,9 @@ def get_data_stratosphere_returns(ticker):
     data = ticker.stratosphere.returns
     data_load_state.text("Loading data...done!")
     return data
+
+def set_clipboard_text(text):
+    clipboard.OpenClipboard()
+    clipboard.EmptyClipboard()
+    clipboard.SetClipboardText(text)
+    clipboard.CloseClipboard()
