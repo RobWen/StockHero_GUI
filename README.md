@@ -1,3 +1,3 @@
 # StockHero
-## Version 0.0.8
+## Version 0.0.9
 This is the repo for my personal frontend

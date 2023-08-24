@@ -143,7 +143,13 @@ class GUI:
             st.write('DataFrame wurde in die Zwischenablage kopiert.')
             st.write(df)
         
-        
+        # Button, um den DataFrame zu kopieren
+        if st.button('Margins'):
+            df = get_data_stratosphere_margins(ticker_symbol)
+            df_markdown = df.to_markdown()
+            set_clipboard_text(df_markdown)
+            st.write('DataFrame wurde in die Zwischenablage kopiert.')
+            st.write(df)
         
         
         

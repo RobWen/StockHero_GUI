@@ -90,6 +90,14 @@ def get_data_stratosphere_returns(ticker):
     data_load_state.text("Loading data...done!")
     return data
 
+@st.cache_resource
+def get_data_stratosphere_margins(ticker):
+    ticker = stock.Ticker(ticker)
+    data_load_state = st.text("Load data...")
+    data = ticker.stratosphere.margins
+    data_load_state.text("Loading data...done!")
+    return data
+
 def set_clipboard_text(text):
     clipboard.OpenClipboard()
     clipboard.EmptyClipboard()

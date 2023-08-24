@@ -1,7 +1,7 @@
-plotly==5.14.1
-prophet==1.1.4
-pyperclip==1.8.2
-pywin32==305
-StockHero==0.4.6
-streamlit==1.23.1
-yfinance==0.2.27
+plotly>=5.14.1
+prophet>=1.1.4
+pyperclip>=1.8.2
+pywin32>=305
+StockHero>=0.4.6
+streamlit>=1.23.1
+yfinance>=0.2.27
