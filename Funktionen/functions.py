@@ -20,6 +20,12 @@ if platform.system() == "Windows":
 else:
     import pyperclip as clipboard
 
+#import plotly.io as io
+#io.renderers.default='browser'
+#import plotly.graph_objects as go
+import pandas as pd
+from datetime import datetime
+
 @st.cache_data
 def get_data_morningstar(ticker):
     ticker = stock.Ticker(ticker)
@@ -103,3 +109,98 @@ def set_clipboard_text(text):
     clipboard.EmptyClipboard()
     clipboard.SetClipboardText(text)
     clipboard.CloseClipboard()
+    
+def cnn_fear_and_greed():
+    exchange = stock.StockExchange('CNN')
+    json = exchange.cnn_fear_and_greed_graph_data
+    
+    # Extracting data from JSON
+    x_values = [json['market_momentum_sp500']['data'][i]['x'] for i in range(len(json['market_momentum_sp500']['data']))]
+    y_values = [json['market_momentum_sp500']['data'][i]['y'] for i in range(len(json['market_momentum_sp500']['data']))]
+
+    #x2_values = [json['market_momentum_sp125']['data'][i]['x'] for i in range(len(json['market_momentum_sp125']['data']))]
+    y2_values = [json['market_momentum_sp125']['data'][i]['y'] for i in range(len(json['market_momentum_sp125']['data']))]
+
+    # Converting Unix epoch time to datetime objects
+    x_datetime = [datetime.fromtimestamp(x / 1000) for x in x_values]
+    #x2_datetime = [datetime.fromtimestamp(x / 1000) for x in x2_values]
+    timestamp = datetime.fromtimestamp(json['market_momentum_sp500']['timestamp'] / 1000)
+    timestamp_formatted = timestamp.strftime('%a %b %d %Y %H:%M:%S GMT%z')
+
+    # Convert data to Pandas DataFrame
+    data = {'Date': x_datetime, 'Momentum': y_values, 'Moving Average': y2_values}
+    df = pd.DataFrame(data)
+
+    # Creating an interactive Plotly chart
+    fig = go.Figure()
+
+    # Adding the S&P 500 Momentum line
+    fig.add_trace(go.Scatter(x=df['Date'], y=df['Momentum'], mode='lines', name='S&P 500', line=dict(color='#1f77b4')))
+
+    # Adding the 125-day Moving Average line
+    fig.add_trace(go.Scatter(x=df['Date'], y=df['Moving Average'], mode='lines', name='125-day Moving Average', line=dict(color='#ff7f0e')))
+
+    # Adding the rating annotation
+    rating = json['market_momentum_sp500']['rating'].upper()
+    fig.add_annotation(
+        text=rating,
+        x=1,
+        y=1.08,
+        xref='paper',
+        yref='paper',
+        showarrow=False,
+        font=dict(size=25, color='red'),
+        align='right',
+        xanchor='right',
+        yanchor='top',
+        bordercolor='black',  # Border color
+        borderwidth=1,        # Border width
+        borderpad=5          # Border padding
+    )
+
+    # Adding titles and labels
+    fig.update_layout(
+        title='<span style="font-size:24px;"><b>Market Momentum</b></span><br><br>S&P 500 and its 125-day moving average',
+        #xaxis_title = timestamp_formatted,
+        xaxis=dict(gridcolor='lightgrey', 
+                   showgrid=True
+                   ),  # Set grid color for x-axis
+        yaxis=dict(
+                    gridcolor='lightgrey', 
+                    side='right',
+                    tickformat=',.2f',
+                    tickfont=dict(size=15)
+                    ),  # Set grid color for y-axis
+        plot_bgcolor='rgba(0, 0, 0, 0)',  # Set plot background color to transparent
+        paper_bgcolor='rgba(0, 0, 0, 0)',  # Set paper background color to transparent
+        legend=dict(x=0.04, y=0.95), 
+        legend_orientation='h',
+        shapes=[
+        # Adding a line shape to mimic the x-axis
+        dict(
+            type="line",
+            x0=min(x_values),  # Starting x-coordinate of the line
+            x1=max(x_values),  # Ending x-coordinate of the line
+            y0=min(y_values) - 50.0,  # y-coordinate of the line (adjust as needed)
+            y1=min(y_values) - 50.0,  # y-coordinate of the line (adjust as needed)
+            line=dict(color="black", width=2)
+        )
+        ]
+    )
+
+    # Add a text annotation to simulate the x-axis title at the desired position
+    fig.add_annotation(
+        text=timestamp_formatted,
+        x=0.95,  # Set the x-coordinate to position the text to the right
+        y=-0.075,  # Adjust the y-coordinate to control the vertical position
+        xref='paper',
+        yref='paper',
+        showarrow=False,
+        font=dict(size=14, color='black'),  # Adjust the font properties as needed
+        align='right',
+    )
+
+    # Show the interactive chart
+    fig.update_layout(height=600, width=1400)
+    st.plotly_chart(fig)
+    
