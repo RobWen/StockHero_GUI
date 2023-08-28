@@ -191,12 +191,12 @@ def cnn_fear_and_greed():
     # Add a text annotation to simulate the x-axis title at the desired position
     fig.add_annotation(
         text=timestamp_formatted,
-        x=0.95,  # Set the x-coordinate to position the text to the right
-        y=-0.075,  # Adjust the y-coordinate to control the vertical position
+        x=1.05,  # Set the x-coordinate to position the text to the right
+        y=-0.1,  # Adjust the y-coordinate to control the vertical position
         xref='paper',
         yref='paper',
         showarrow=False,
-        font=dict(size=14, color='black'),  # Adjust the font properties as needed
+        font=dict(size=14, color='white'),  # Adjust the font properties as needed
         align='right',
     )
 
