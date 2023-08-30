@@ -9,4 +9,5 @@ This is the repo for my personal frontend
 ```
 
 > [!IMPORTANT]
-> **The frontend was written completly by a Large Language Model (LLM), no developer was hurt**
+> **The entirety of the frontend was meticulously composed by a Large Language Model (LLM), resulting in an exquisite outcome, 
+> and I am pleased to affirm that no developers incurred any harm throughout this endeavor.**
