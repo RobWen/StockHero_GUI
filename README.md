@@ -9,4 +9,4 @@ This is the repo for my personal frontend
 ```
 
 > [!IMPORTANT]
-> **The frontend was completly written by OpenAI, no developer was hurt**
+> **The frontend was written completly by a Large Language Model (LLM), no developer was hurt**
