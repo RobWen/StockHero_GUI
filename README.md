@@ -9,4 +9,4 @@ This is the repo for my personal frontend
 ```
 
 > [!IMPORTANT]
-> **The GUI was completed written by OpenAI, no developer was hurt**
+> **The frontend was completly written by OpenAI, no developer was hurt**
