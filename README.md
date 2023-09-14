@@ -1,5 +1,5 @@
 # StockHero
-## Version 0.0.10
+## Version 0.0.11
 This is the repo for my personal frontend
 
 ```python
@@ -9,5 +9,4 @@ This is the repo for my personal frontend
 ```
 
 > [!IMPORTANT]
-> **The entirety of the frontend was meticulously composed by a Large Language Model (LLM), resulting in an exquisite outcome, 
-> and I am pleased to affirm that no developers incurred any harm throughout this endeavor.**
+> **The entirety of the frontend was meticulously composed by a Large Language Model (LLM), resulting in an exquisite outcome, and I am pleased to affirm that no developers incurred any harm throughout this endeavor.**

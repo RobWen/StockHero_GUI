@@ -136,11 +136,15 @@ class GUI:
         with left_col:
             if st.button('Historisches Debt-to-EBITDA-Ratio'):
                 df = get_data_gurufocus_debt_to_ebitda(ticker_symbol)
-                df_markdown = df.to_markdown()
-                set_clipboard_text(df_markdown)
-                st.write('DataFrame wurde in die Zwischenablage kopiert.')
-                with right_col:
-                    st.write(df)
+                if df is None:
+                    with right_col:
+                        st.markdown("<font color='green'>Debt-to-EBITDA is not ranked, so likely no debt</font>", unsafe_allow_html=True)
+                else:
+                    df_markdown = df.to_markdown()
+                    set_clipboard_text(df_markdown)
+                    st.write('DataFrame wurde in die Zwischenablage kopiert.')
+                    with right_col:
+                        st.write(df)
         
     ################################
     ###                          ###
