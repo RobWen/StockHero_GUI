@@ -146,6 +146,16 @@ class GUI:
                     with right_col:
                         st.write(df)
         
+        # Button, um den DataFrame zu kopieren
+        with left_col:
+            if st.button('Historische Dividenden-Rendite'):
+                df = get_data_gurufocus_div_yield(ticker_symbol)
+                df_markdown = df.to_markdown()
+                set_clipboard_text(df_markdown)
+                st.write('DataFrame wurde in die Zwischenablage kopiert.')
+                with right_col:
+                    st.write(df)
+        
     ################################
     ###                          ###
     ###    Stratosphere GUI      ###
