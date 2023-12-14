@@ -26,6 +26,13 @@ else:
 import pandas as pd
 from datetime import datetime
 
+    #########################
+    ###                   ###
+    ###    Morningstar    ###
+    ###     functions     ###
+    ###                   ###
+    #########################
+
 @st.cache_data
 def get_data_morningstar(ticker):
     ticker = stock.Ticker(ticker)
@@ -37,6 +44,13 @@ def get_data_morningstar(ticker):
         name = "Das ist kein gültiger Name !"
     data_load_state.text("Loading data...done!")
     return data, name
+
+    #########################
+    ###                   ###
+    ###    Meta Forecast  ###
+    ###     functions     ###
+    ###                   ###
+    #########################
 
 @st.cache_data
 def load_data(ticker, START, TODAY):
@@ -72,6 +86,13 @@ def prediction(df_train, period):
     forecast = m.predict(future)
     return m, forecast
 
+    #########################
+    ###                   ###
+    ###     Gurufocus     ###
+    ###     functions     ###
+    ###                   ###
+    #########################
+
 @st.cache_data
 def get_data_gurufocus_pe(ticker):
     ticker = stock.Ticker(ticker)
@@ -96,6 +117,13 @@ def get_data_gurufocus_div_yield(ticker):
     data_load_state.text("Loading data...done!")
     return data
 
+    ##########################
+    ###                    ###
+    ###    Stratosphere    ###
+    ###     functions      ###
+    ###                    ###
+    ##########################
+
 @st.cache_resource
 def get_data_stratosphere_returns(ticker):
     ticker = stock.Ticker(ticker)
@@ -112,12 +140,26 @@ def get_data_stratosphere_margins(ticker):
     data_load_state.text("Loading data...done!")
     return data
 
+    #####################
+    ###               ###
+    ###    General    ###
+    ###   functions   ###
+    ###               ###
+    #####################
+
 def set_clipboard_text(text):
     clipboard.OpenClipboard()
     clipboard.EmptyClipboard()
     clipboard.SetClipboardText(text)
     clipboard.CloseClipboard()
-    
+
+    #####################
+    ###               ###
+    ###      CNN      ###
+    ###   functions   ###
+    ###               ###
+    #####################
+
 def cnn_fear_and_greed():
     exchange = stock.StockExchange('CNN')
     json = exchange.cnn_fear_and_greed_graph_data
@@ -199,7 +241,7 @@ def cnn_fear_and_greed():
     # Add a text annotation to simulate the x-axis title at the desired position
     fig.add_annotation(
         text=timestamp_formatted,
-        x=1.05,  # Set the x-coordinate to position the text to the right
+        x=1.04,  # Set the x-coordinate to position the text to the right
         y=-0.1,  # Adjust the y-coordinate to control the vertical position
         xref='paper',
         yref='paper',

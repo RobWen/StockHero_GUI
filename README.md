@@ -1,5 +1,5 @@
 # StockHero
-## Version 0.0.12
+## Version 0.0.13
 This is the repo for my personal frontend
 
 ```python
