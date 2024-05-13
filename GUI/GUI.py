@@ -9,13 +9,14 @@ from Funktionen.functions import *
 
 import streamlit as st
 
-from datetime import date
+from datetime import date, timedelta
 
 class GUI:
     def __init__(self):
         st.set_page_config(page_title="StockHero",layout="wide")
         st.sidebar.title('Options')
-        option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus', 'Stratosphere', 'CNN'), 4)
+        option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus', 
+                                                           'Stratosphere', 'CNN', 'Stock Dashboard'), 4)
         
         if option == 'Forecasting':
             self.prophet_gui()
@@ -31,6 +32,9 @@ class GUI:
             
         if option == 'CNN':
             self.cnn_gui()
+            
+        if option == 'Stock Dashboard':
+            self.stock_dashboard_gui()
 
     ################################
     ###                          ###
@@ -206,3 +210,58 @@ class GUI:
     def cnn_gui(self):
         cnn_fear_and_greed()
         
+    ########################
+    ###                  ###
+    ###     Stock        ###
+    ###   Dashboard      ###
+    ###                  ###
+    ########################
+    
+    def stock_dashboard_gui(self):
+    
+        st.title('Stock Dashboard')
+        
+        ticker = st.sidebar.text_input('Ticker', value='STM.DE')
+        default_date = date(2022, 1, 1)
+        start_date = st.sidebar.date_input('Start Date', value=default_date)
+        end_date = st.sidebar.date_input('End Date')
+    
+        # Creating two columns:
+        left_col, right_col = st.columns([3, 1])
+        
+        with right_col:
+            
+            if st.checkbox('Checkbox'):
+                st.balloons()
+    
+        import yfinance as yf
+        
+        data = yf.download(ticker, start = start_date, end = end_date)
+    
+        #data = load_data(ticker, start_date, end_date)
+        
+        #plot_raw_data(data)
+        
+        import plotly.express as px
+        
+        fig = px.line(data, x = data.index, y = data['Adj Close'], title = ticker)
+        st.plotly_chart(fig)
+        #st.plotly_chart(fig, use_container_width=True)
+        
+    
+    # Tabs
+        tab1, tab2 = st.tabs(['Fundamental Data', 'Latest News'])
+        
+        with tab1:
+        	st.header("first tab")
+        
+        with tab2:
+            # Boolean to resize the dataframe, stored as a session state variable
+            st.checkbox("Use container width", value=False, key="use_container_width")
+            
+            # Macht die Abfrage in functions.py, ruft StockHero auf
+            df = eqs_news(ticker)
+            
+            # Display the dataframe and allow the user to stretch the dataframe
+            # across the full width of the container, based on the checkbox value
+            st.dataframe(df, use_container_width=st.session_state.use_container_width, hide_index=True)

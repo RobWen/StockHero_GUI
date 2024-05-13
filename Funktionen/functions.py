@@ -253,4 +253,12 @@ def cnn_fear_and_greed():
     # Show the interactive chart
     fig.update_layout(height=600, width=1400)
     st.plotly_chart(fig)
-    
+
+@st.cache_data
+def eqs_news(ticker):
+    ticker = stock.Ticker(ticker)
+    data_load_state = st.text("Load data...")
+    t = stock.StockExchange('something')
+    data = t.eqs_news_latest_news(10, 'Stabilus')
+    data_load_state.text("Loading data...done!")
+    return data
