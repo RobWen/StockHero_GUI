@@ -254,11 +254,33 @@ def cnn_fear_and_greed():
     fig.update_layout(height=600, width=1400)
     st.plotly_chart(fig)
 
+    #####################
+    ###               ###
+    ###    EQS News   ###
+    ###               ###
+    ###               ###
+    #####################
+
 @st.cache_data
-def eqs_news(ticker):
-    ticker = stock.Ticker(ticker)
+def eqs_news(isin):
+    ticker = stock.Ticker(isin)
     data_load_state = st.text("Load data...")
     t = stock.StockExchange('something')
-    data = t.eqs_news_latest_news(10, 'Stabilus')
+    data = t.eqs_news_latest_news(10, isin)
+    data_load_state.text("Loading data...done!")
+    return data
+
+    ##############################
+    ###                        ###
+    ###    Boersengefluester   ###
+    ###                        ###
+    ###                        ###
+    ##############################
+    
+@st.cache_data
+def boersengefluester(isin):
+    ticker = stock.Ticker(isin)
+    data_load_state = st.text("Load data...")
+    data = ticker.boersengefluester.finanzdaten
     data_load_state.text("Loading data...done!")
     return data

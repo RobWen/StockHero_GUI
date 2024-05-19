@@ -219,13 +219,18 @@ class GUI:
     
     def stock_dashboard_gui(self):
     
+        # Title Main Page
         st.title('Stock Dashboard')
         
-        ticker = st.sidebar.text_input('Ticker', value='STM.DE')
-        default_date = date(2022, 1, 1)
+        # Sidebar
+        st.sidebar.markdown("---")
+        isin = st.sidebar.text_input('ISIN', value='DE000STAB1L8')
+        
+        default_date = date(2024, 1, 1)
         start_date = st.sidebar.date_input('Start Date', value=default_date)
         end_date = st.sidebar.date_input('End Date')
     
+        # Main Page
         # Creating two columns:
         left_col, right_col = st.columns([3, 1])
         
@@ -236,31 +241,46 @@ class GUI:
     
         import yfinance as yf
         
-        data = yf.download(ticker, start = start_date, end = end_date)
-    
-        #data = load_data(ticker, start_date, end_date)
+        data = yf.download(isin, start = start_date, end = end_date)
         
-        #plot_raw_data(data)
+        isin_data = yf.Ticker(isin)
+        longName = isin_data.info['longName']
         
         import plotly.express as px
         
-        fig = px.line(data, x = data.index, y = data['Adj Close'], title = ticker)
+        fig = px.line(data, x = data.index, y = data['Adj Close'], title = longName)
         st.plotly_chart(fig)
         #st.plotly_chart(fig, use_container_width=True)
         
     
-    # Tabs
+        # Tabs
         tab1, tab2 = st.tabs(['Fundamental Data', 'Latest News'])
         
         with tab1:
-        	st.header("first tab")
+            st.header("Fundamental Data")
+        
+            # Get the data
+            data_boersengefluester = boersengefluester(isin)
+            
+            # Pandas DataFrame erstellen
+            df = pd.DataFrame(data_boersengefluester)
+            
+            # Pandas Series erstellen
+            #ausgewaehlte_zeilen = df.iloc[[0, 8]]
+            
+            # Index umbenennen
+            #ausgewaehlte_zeilen.index = ['Umsatz'], ['EPS (Diluted)']
+            
+            # DataFrame in Streamlit anzeigen
+            #st.write(ausgewaehlte_zeilen)
+            st.write(df)
         
         with tab2:
             # Boolean to resize the dataframe, stored as a session state variable
             st.checkbox("Use container width", value=False, key="use_container_width")
             
             # Macht die Abfrage in functions.py, ruft StockHero auf
-            df = eqs_news(ticker)
+            df = eqs_news(isin)
             
             # Display the dataframe and allow the user to stretch the dataframe
             # across the full width of the container, based on the checkbox value
