@@ -8,6 +8,7 @@ Created on Fri Aug 11 13:02:58 2023
 from Funktionen.functions import *
 
 import streamlit as st
+import yfinance as yf
 
 from datetime import date, timedelta
 
@@ -15,26 +16,19 @@ class GUI:
     def __init__(self):
         st.set_page_config(page_title="StockHero",layout="wide")
         st.sidebar.title('Options')
-        option = st.sidebar.selectbox("Which Dashboard?", ('Forecasting', 'Morningstar', 'Gurufocus', 
-                                                           'Stratosphere', 'CNN', 'Stock Dashboard'), 4)
+        option = st.sidebar.selectbox("Which Dashboard?", ('CNN', 'Stock Dashboard', 'Data Resources', 'Experimental'), 0)
         
-        if option == 'Forecasting':
-            self.prophet_gui()
-
-        if option == 'Morningstar':
-            self.morningstar_gui()
-
-        if option == 'Gurufocus':
-            self.gurufocus_gui()
-            
-        if option == 'Stratosphere':
-            self.stratosphere_gui()
-            
         if option == 'CNN':
             self.cnn_gui()
             
         if option == 'Stock Dashboard':
             self.stock_dashboard_gui()
+            
+        if option == 'Data Resources':
+            self.data_resources_gui()
+            
+        if option == 'Experimental':
+            self.experimental_gui()
 
     ################################
     ###                          ###
@@ -77,14 +71,14 @@ class GUI:
     ################################
 
     def morningstar_gui(self):
-        st.title('Eingabe')
+        st.header('Eingabe')
         
         # Creating two columns:
         left_col, right_col = st.columns([5,4])
         
         # Eingabebox für das Ticker-Symbol
         with left_col:
-            ticker_symbol = st.text_input('Gib das Ticker-Symbol / die ISIN / den Namen ein:')
+            ticker_symbol = st.text_input('Gib das Ticker-Symbol / ISIN / Namen ein:')
             df, name_symbol = get_data_morningstar(ticker_symbol)
         
         # Zeige das eingegebene Ticker-Symbol an
@@ -112,7 +106,7 @@ class GUI:
     ################################
         
     def gurufocus_gui(self):    
-        st.title('Ticker-Symbol Eingabe')
+        st.header('Eingabe')
         
         # Creating two columns:
         left_col, right_col = st.columns(2)
@@ -167,7 +161,8 @@ class GUI:
     ################################
     
     def stratosphere_gui(self):
-        st.title('Eingabe')
+        #st.title('Eingabe')
+        st.header('Eingabe')
         
         # Creating two columns:
         left_col, right_col = st.columns(2)
@@ -231,33 +226,42 @@ class GUI:
         end_date = st.sidebar.date_input('End Date')
     
         # Main Page
-        # Creating two columns:
+        # Creating two columns:  
         left_col, right_col = st.columns([3, 1])
         
+        # Sollte hier mal irgendwas sinnvolleres damit machen
         with right_col:
             
             if st.checkbox('Checkbox'):
                 st.balloons()
     
-        import yfinance as yf
-        
-        data = yf.download(isin, start = start_date, end = end_date)
-        
-        isin_data = yf.Ticker(isin)
-        longName = isin_data.info['longName']
-        
-        import plotly.express as px
-        
-        fig = px.line(data, x = data.index, y = data['Adj Close'], title = longName)
-        st.plotly_chart(fig)
-        #st.plotly_chart(fig, use_container_width=True)
-        
+        # Try to download the data
+        try:
+            data = yf.download(isin, start = start_date, end = end_date)
+            
+            # Check if the data is empty
+            if data.empty:
+                st.error("No data found for the given ISIN and date range.")
+            else:
+                # looking for the Name of the Company in yf data
+                isin_data = yf.Ticker(isin)
+                longName = isin_data.info['longName']
+                
+                import plotly.express as px
+                
+                fig = px.line(data, x = data.index, y = data['Adj Close'], title = longName)
+                fig.update_layout(yaxis_title='Adj Close (1d)')
+                st.plotly_chart(fig)
+                #st.plotly_chart(fig, use_container_width=True)
+        except Exception as e:
+            st.error(f"An error occurred while downloading the data: {e}")
     
         # Tabs
-        tab1, tab2 = st.tabs(['Fundamental Data', 'Latest News'])
+        tab1, tab2, tab3 = st.tabs(['Fundamental Data', 'Latest News', 'Valuation Growth'])
         
+        # Boersengefluester
         with tab1:
-            st.header("Fundamental Data")
+            st.header("Fundamental Data Overview")
         
             # Get the data
             data_boersengefluester = boersengefluester(isin)
@@ -275,6 +279,7 @@ class GUI:
             #st.write(ausgewaehlte_zeilen)
             st.write(df)
         
+        # EQS-News
         with tab2:
             # Boolean to resize the dataframe, stored as a session state variable
             st.checkbox("Use container width", value=False, key="use_container_width")
@@ -285,3 +290,49 @@ class GUI:
             # Display the dataframe and allow the user to stretch the dataframe
             # across the full width of the container, based on the checkbox value
             st.dataframe(df, use_container_width=st.session_state.use_container_width, hide_index=True)
+        
+        # Morningstar
+        with tab3:
+            df, name_symbol = get_data_morningstar(isin)
+            
+            #st.subheader('_:blue[Features]_ :sunglasses:')
+            
+            # Button, um den DataFrame zu kopieren
+            if st.button('DataFrame kopieren'):
+                if df is not None: 
+                    df_markdown = df.to_markdown()
+                    set_clipboard_text(df_markdown)
+                    st.write('DataFrame wurde in die Zwischenablage kopiert.')
+                else:
+                    st.write('Keine Daten vorhanden :sunglasses:')
+                        
+            st.dataframe(df)
+            
+            
+    def data_resources_gui(self):
+        # Title Main Page
+        #st.title('Data Resources')
+        
+        # Sidebar
+        st.sidebar.markdown("---")
+        
+        option = st.sidebar.selectbox("Select your target?", ('Stratosphere', 'Morningstar', 'Gurufocus'), 2)
+        
+        if option == 'Morningstar':
+            self.morningstar_gui()
+
+        if option == 'Gurufocus':
+            self.gurufocus_gui()
+            
+        if option == 'Stratosphere':
+            self.stratosphere_gui()
+        
+    def experimental_gui(self):
+        
+        # Sidebar
+        st.sidebar.markdown("---")
+        
+        option = st.sidebar.selectbox("Select your playground?", ('Forecasting', 'tbd'), 0)
+        
+        if option == 'Forecasting':
+            self.prophet_gui()
