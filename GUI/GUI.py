@@ -16,9 +16,9 @@ class GUI:
     def __init__(self):
         st.set_page_config(page_title="StockHero",layout="wide")
         st.sidebar.title('Options')
-        option = st.sidebar.selectbox("Which Dashboard?", ('CNN', 'Stock Dashboard', 'Data Resources', 'Experimental'), 0)
+        option = st.sidebar.selectbox("Which Dashboard?", ('Market Overview', 'Stock Dashboard', 'Data Resources', 'Experimental'), 0)
         
-        if option == 'CNN':
+        if option == 'Market Overview':
             self.cnn_gui()
             
         if option == 'Stock Dashboard':
@@ -271,7 +271,7 @@ class GUI:
     
         # Main Page
         # Creating two columns:  
-        left_col, right_col = st.columns([3, 1])
+        left_col, right_col = st.columns([7, 1])
         
         # Sollte hier mal irgendwas sinnvolleres damit machen
         with right_col:
