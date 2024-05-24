@@ -108,8 +108,11 @@ class GUI:
     def gurufocus_gui(self):    
         st.header('Eingabe')
         
-        # Creating two columns:
-        left_col, right_col = st.columns(2)
+        # Define custom column widths
+        left_col_width, right_col_width, mid_col_width = 6, 4, 3
+        
+        # Creating three columns:
+        left_col, right_col, mid_col = st.columns([left_col_width, right_col_width, mid_col_width])
         
         # Eingabebox für das Ticker-Symbol
         with left_col:
@@ -121,38 +124,79 @@ class GUI:
                 st.write(f'Du hast das Ticker-Symbol eingegeben: {ticker_symbol}')
         
         # Button, um den DataFrame zu kopieren
-        with left_col:
-            if st.button('Historisches PE-Ratio'):
-                df = get_data_gurufocus_pe(ticker_symbol)
-                df_markdown = df.to_markdown()
-                set_clipboard_text(df_markdown)
-                st.write('DataFrame wurde in die Zwischenablage kopiert.')
-                with right_col:
-                    st.write(df)
-            
-        # Button, um den DataFrame zu kopieren
-        with left_col:
-            if st.button('Historisches Debt-to-EBITDA-Ratio'):
-                df = get_data_gurufocus_debt_to_ebitda(ticker_symbol)
-                if df is None:
-                    with right_col:
-                        st.markdown("<font color='green'>Debt-to-EBITDA is not ranked, so likely no debt</font>", unsafe_allow_html=True)
-                else:
-                    df_markdown = df.to_markdown()
-                    set_clipboard_text(df_markdown)
-                    st.write('DataFrame wurde in die Zwischenablage kopiert.')
+        # Historisches PE-Ratio
+        
+        try:
+            with mid_col:
+                if st.button('Historisches PE-Ratio'):
+                    df = get_data_gurufocus_pe(ticker_symbol)
+                    
+                    with left_col:
+                        if df is None:
+                            st.markdown("")
+                            st.warning("Kein PE-Ratio für dieses Symbol vorhanden.")
+                            st.markdown("---")  # Trennstrich zwischen den Zeilen
+                            st.markdown("Tipp: Sehr wahrscheinlich gibt es kein E im PE-Ratio oder die Eingabe war fehlerhaft.")
+                        else:
+                            df_markdown = df.to_markdown()
+                            set_clipboard_text(df_markdown)
+                            st.markdown('DataFrame wurde in die Zwischenablage kopiert.')
+                    
                     with right_col:
                         st.write(df)
         
+        except Exception as e:
+            st.error(f"Fehler beim Kopieren des DataFrames: {e}")        
+
+        
         # Button, um den DataFrame zu kopieren
-        with left_col:
-            if st.button('Historische Dividenden-Rendite'):
-                df = get_data_gurufocus_div_yield(ticker_symbol)
-                df_markdown = df.to_markdown()
-                set_clipboard_text(df_markdown)
-                st.write('DataFrame wurde in die Zwischenablage kopiert.')
-                with right_col:
-                    st.write(df)
+        # Historisches Debt-to-EBITDA-Ratio
+        
+        try:
+            with mid_col:
+                if st.button('Historisches Debt-to-EBITDA-Ratio'):
+                    df = get_data_gurufocus_debt_to_ebitda(ticker_symbol)
+                    
+                    with left_col:
+                        if df is None:
+                            st.markdown("")
+                            st.warning("Kein Debt-to-EBITDA-Ratio für dieses Symbol vorhanden.")
+                            st.markdown("---")  # Trennstrich zwischen den Zeilen
+                            st.markdown("Tipp: Sehr wahrscheinlich hat das Unternehmen keine Schulden oder die Eingabe war fehlerhaft.")
+                        else:
+                            df_markdown = df.to_markdown()
+                            set_clipboard_text(df_markdown)
+                            st.markdown('DataFrame wurde in die Zwischenablage kopiert.')
+                        
+                    with right_col:
+                        st.write(df)
+                            
+        except Exception as e:
+            st.error(f"Fehler beim Kopieren des DataFrames: {e}")        
+        
+        # Button, um den DataFrame zu kopieren
+        # Historische Dividenden-Rendite
+        
+        try:
+            with mid_col:
+                if st.button('Historische Dividenden-Rendite'):
+                    df = get_data_gurufocus_div_yield(ticker_symbol)
+                    
+                    with left_col:
+                        if df is None:
+                            st.warning("Keine Dividendenrenditedaten für dieses Symbol vorhanden.")
+                            st.markdown("---")  # Trennstrich zwischen den Zeilen
+                            st.markdown("Tipp: Sehr wahrscheinlich schüttet das Unternehmen keine Dividende aus oder die Eingabe war fehlerhaft.")
+                        else:    
+                            df_markdown = df.to_markdown()
+                            set_clipboard_text(df_markdown)
+                            st.markdown('DataFrame wurde in die Zwischenablage kopiert.')
+                    
+                    with right_col:
+                        st.write(df)
+                        
+        except Exception as e:
+            st.error(f"Fehler beim Kopieren des DataFrames: {e}")
         
     ################################
     ###                          ###
