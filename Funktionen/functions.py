@@ -284,3 +284,118 @@ def boersengefluester(isin):
     data = ticker.boersengefluester.finanzdaten
     data_load_state.text("Loading data...done!")
     return data
+
+    #####################
+    ###               ###
+    ###    10 Years   ###
+    ###               ###
+    ###               ###
+    #####################
+
+    # Ermittle alle Unternehmen deren Aktienkurs jedes Jahr höher steht, als im vorherigen Jahr
+    # in Bezug auf den Stichtag und ohne Berücksichtigung der Dividenden
+
+@st.cache_data
+def ten_year_positive():
+    
+    # wird verwendet, um Datums- und Zeitoperationen durchzuführen, die über die Standardmethoden von Python hinausgehen
+    from datetime import datetime
+    from dateutil.relativedelta import relativedelta
+
+    # Zeitraum und Fehler 
+    # wobei der Fehler nicht wirklich berücksichtigt wird derzeit
+    zeitraum, fehler = 10, 0
+
+    # Alle Tickersymbole von der NASDAQ abfragen, die Tickersymbole werden später einzeln abgefragt
+    # Das Dataframe enthält auch noch weitere Informationen, wie Name, Industrie, Sector, Market Cap
+    data_nasdaq = stock.StockExchange('').nasdaq
+    
+    # Der Ausgangsdatensatz wird um einiges an Blödsinn bereinigt
+    data_nasdaq = data_nasdaq[(data_nasdaq['Market Cap'] != '0.00') & (data_nasdaq['Market Cap'] != '')].reset_index(drop=True)
+    
+    # Lässt den Bereich freiwählen, sofern gewünscht
+    # vielleicht kann man damit später nochmal was machen                                    
+    #data = data.iloc[1020: 1080,:].reset_index(drop=True)
+
+    # Aus dem Ausgangs-Dataframe wird eine Series nur mit den Tickersymbolen gemacht
+    # braucht man nicht wirklich, lasse ich aber erstmal so
+    sdata_ticker = data_nasdaq.iloc[:,0]
+
+    # Ermittelt den Substring der einzelnen Jahre im Abstand von jeweils 1 Jahr der Close/Last Preise
+    # über die komplette Länge von 10 Jahren
+    def szeitreihe():
+        try:
+            formated_date = datetime.strptime(data_stock.iloc[0,0], "%m/%d/%Y")
+            
+            substrings = []
+            for i in range(0,10):
+                try:
+                    reformated_date = formated_date.strftime('%m/%d/%Y')
+                    substrings.append(data_stock.loc[data_stock['Date'].str.contains(reformated_date),'Close/Last'].values[0])
+                except(IndexError):
+                    try:
+                        reformated_date = formated_date - relativedelta(days=1)
+                        date = reformated_date.strftime('%m/%d/%Y')
+                        substrings.append(data_stock.loc[data_stock['Date'].str.contains(date),'Close/Last'].values[0])
+                    except(IndexError):
+                        try:
+                            reformated_date = formated_date - relativedelta(days=2)
+                            date = reformated_date.strftime('%m/%d/%Y')
+                            substrings.append(data_stock.loc[data_stock['Date'].str.contains(date),'Close/Last'].values[0])
+                        except(IndexError):
+                            pass
+                
+                formated_date = formated_date - relativedelta(years=1)
+            
+            substrings.append(data_stock.iloc[-1,1])
+        except(AttributeError):
+            substrings = ['$0'] # falls er einen None typ zurückgibt
+            
+        return substrings
+
+    # Die Funktion entfernt das $ Symbol, das Trennzeichen und wandelt die Werte in einen Float um
+    def fzeitreihe():
+        substrings_ohne_waehrung = []
+        for i in range(0,len(szeitreihe())):
+            substrings_ohne_waehrung.append(float(szeitreihe()[i].replace(',', '').replace('$','')))
+        
+        return substrings_ohne_waehrung
+
+    # Die Funktion zählt die Anzahl, wenn der Wert größer als der vom vorherigen Jahr ist
+    def check():
+        n = 0
+        
+        for i in range(0,zeitraum):
+            if fzeitreihe()[i] >= fzeitreihe()[i+1]:
+                n = n + 1
+        return n
+
+    results = []
+
+    ### x Jahre ###
+    for symbol in range(0, len(sdata_ticker) - 1):
+        data_stock = stock.Ticker(sdata_ticker[symbol]).nasdaq.hist_quotes_stock
+        
+        # Bei 10 Jahren also 11 Zeichen, wenn weniger Zeichen vorhanden sind dann abbrechen
+        if len(szeitreihe()) - 1 >= zeitraum:
+            if check() == zeitraum - fehler:
+                gesamtperformance = '{:.2%}'.format(fzeitreihe()[0] / fzeitreihe()[-1])
+                performance_pa = '{:.2%}'.format(pow(fzeitreihe()[0] / fzeitreihe()[-1], 1 / (len(szeitreihe()) - 1)) - 1)
+                
+                result = {
+                    "Position": symbol,
+                    "Ticker": data_nasdaq.iloc[symbol, 0],
+                    "Name": data_nasdaq.iloc[symbol, 1],
+                    "Industry": data_nasdaq.iloc[symbol, 9],
+                    "Sector": data_nasdaq.iloc[symbol, 10],
+                    "Market Cap": "{:,}".format(int(data_nasdaq.iloc[symbol, 6].split('.')[0])).replace(",", "."),
+                    "10y": gesamtperformance,
+                    "p.a.": performance_pa
+                }
+                st.dataframe(result)
+                results.append(result)
+
+    # Ergebnisse in einem Pandas DataFrame anzeigen
+    df_results = pd.DataFrame(results)
+    
+    return df_results

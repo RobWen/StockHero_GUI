@@ -24,7 +24,7 @@ class GUI:
         if option == 'Stock Dashboard':
             self.stock_dashboard_gui()
             
-        if option == 'Data Resources':
+        if option == 'Data Mining':
             self.data_resources_gui()
             
         if option == 'Experimental':
@@ -248,7 +248,51 @@ class GUI:
         
     def cnn_gui(self):
         cnn_fear_and_greed()
+    
+    ########################
+    ###                  ###
+    ###     10y GUI      ###
+    ###                  ###
+    ########################
+    
+    # Funktion, die bei Button-Klick ausgeführt wird
+    def button_clicked(self, option1, option2, option3):
+        #st.write(f"Rechnung wird ausgeführt mit den Optionen: {option1} und {option2}")
+        data_load_state = st.text("Load data...")
+        df = ten_year_positive()
+        data_load_state.text("Loading data...done!")
+        df_markdown = df.to_markdown()
+        set_clipboard_text(df_markdown)
+        st.write('DataFrame wurde in die Zwischenablage kopiert.')
+        st.dataframe(df)
+    
+    def ten_year_gui(self):
+        st.title('10y positive returns \n(every single year)')
+        st.error('the calculation will take several hours')
+                
+        # Auswahl Optionen
+        options, options2, options3 = ["NASDAQ"], ["10y"], ["0"]
         
+        # Selectbox erstellen
+        selected_option = st.selectbox("Wähle den Data Provider:", options)
+        
+        # Zweite Selectbox erstellen
+        selected_option2 = st.selectbox("Wähle den Zeitraum:", options2)
+        
+        # Dritte Selectbox erstellen
+        selectbox_label = "Wähle den Fehler:\n\n(dies führt zu mehr Ergebnissen)"
+        selected_option3 = st.selectbox(selectbox_label, options3)
+        
+        # Leerzeichen
+        st.markdown("")
+        
+        # Anzeige der ausgewählten Option
+        st.write(f"Du hast {selected_option} und {selected_option2} und {selected_option3} ausgewählt.")
+        
+        # Button erstellen und Funktion bei Klick ausführen
+        if st.button("Start"):
+            self.button_clicked(selected_option, selected_option2, selected_option3)
+    
     ########################
     ###                  ###
     ###     Stock        ###
@@ -351,8 +395,14 @@ class GUI:
                     st.write('Keine Daten vorhanden :sunglasses:')
                         
             st.dataframe(df)
-            
-            
+    
+    ########################
+    ###                  ###
+    ###   Dataresources  ###
+    ###        GUI       ###
+    ###                  ###
+    ########################
+    
     def data_resources_gui(self):
         # Title Main Page
         #st.title('Data Resources')
@@ -371,12 +421,22 @@ class GUI:
         if option == 'Stratosphere':
             self.stratosphere_gui()
         
+        ########################
+        ###                  ###
+        ###   Experimental   ###
+        ###        GUI       ###
+        ###                  ###
+        ########################   
+        
     def experimental_gui(self):
         
         # Sidebar
         st.sidebar.markdown("---")
         
-        option = st.sidebar.selectbox("Select your playground?", ('Forecasting', 'tbd'), 0)
+        option = st.sidebar.selectbox("Select your playground?", ('Forecasting', '10y positive returns'), 0)
         
         if option == 'Forecasting':
             self.prophet_gui()
+            
+        if option == '10y positive returns':
+            self.ten_year_gui()

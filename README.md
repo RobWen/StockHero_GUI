@@ -1,5 +1,5 @@
 # StockHero Example GUI
-## Version 0.0.19
+## Version 0.0.20
 This is the repo for my personal frontend
 
 ```python
