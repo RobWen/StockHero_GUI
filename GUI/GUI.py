@@ -16,7 +16,7 @@ class GUI:
     def __init__(self):
         st.set_page_config(page_title="StockHero",layout="wide")
         st.sidebar.title('Options')
-        option = st.sidebar.selectbox("Which Dashboard?", ('Market Overview', 'Stock Dashboard', 'Data Resources', 'Experimental'), 0)
+        option = st.sidebar.selectbox("Which Dashboard?", ('Market Overview', 'Stock Dashboard', 'Data Mining', 'Experimental'), 0)
         
         if option == 'Market Overview':
             self.cnn_gui()
@@ -29,40 +29,6 @@ class GUI:
             
         if option == 'Experimental':
             self.experimental_gui()
-
-    ################################
-    ###                          ###
-    ###       Prophet GUI        ###
-    ###                          ###
-    ################################
-
-    def prophet_gui(self):
-        START = "2013-01-01"
-        TODAY = date.today().strftime("%Y-%m-%d")
-    
-        st.title("Stock Prediction")
-    
-        # Creating two columns:
-        left_col, right_col = st.columns([3, 1])
-        
-        # Eingabebox für das Ticker-Symbol
-        with left_col:
-            selected_stock = st.text_input("Gib das Ticker-Symbol ein:")
-    
-            if selected_stock:
-                n_years = st.slider("Years of prediction:", 1, 4)
-                period = n_years * 365
-                
-                data = load_data(selected_stock, START, TODAY)
-                
-                plot_raw_data(data)
-                
-                df_train = data[['Date', 'Close']]
-                df_train = df_train.rename(columns = {"Date": "ds", "Close": "y"})
-                
-                m, forecast = prediction(df_train, period)
-                
-                plot_forecast(m, forecast)
 
     ################################
     ###                          ###
@@ -433,10 +399,7 @@ class GUI:
         # Sidebar
         st.sidebar.markdown("---")
         
-        option = st.sidebar.selectbox("Select your playground?", ('Forecasting', '10y positive returns'), 0)
-        
-        if option == 'Forecasting':
-            self.prophet_gui()
-            
+        option = st.sidebar.selectbox("Select your playground?", ('10y positive returns', 'placeholder'), 0)
+                
         if option == '10y positive returns':
             self.ten_year_gui()
